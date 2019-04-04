@@ -22,6 +22,7 @@ class CheckFormat
     else
       check_formats
     end
+    self
   end
 
   def result

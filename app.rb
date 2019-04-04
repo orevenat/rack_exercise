@@ -12,7 +12,7 @@ class App
     method = @request.request_method
 
     if path == '/time' && method == 'GET'
-      return render_time(CheckFormat.new(@request.params['format']))
+      return render_time(@request.params['format'])
     end
 
     compose_response("Unknown page #{path}\n", 404)
@@ -24,8 +24,8 @@ class App
     Rack::Response.new(body, status, 'Content-Type' => 'text/plain').finish
   end
 
-  def render_time(formats)
-    formats.parse
+  def render_time(query)
+    formats = CheckFormat.new(query).parse
     if formats.valid?
       compose_response(@time.strftime(formats.result))
     else
