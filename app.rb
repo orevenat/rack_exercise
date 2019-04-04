@@ -9,10 +9,10 @@ class App
   def call(env)
     @request = Rack::Request.new(env)
     path = @request.path_info
+    method = @request.request_method
 
-    if @request.path_info == '/time' && @request.request_method == 'GET'
-      format = @request.params['format'] || ''
-      return render_time(CheckFormat.new(format))
+    if path == '/time' && method == 'GET'
+      return render_time(CheckFormat.new(@request.params['format']))
     end
 
     compose_response("Unknown page #{path}\n", 404)
@@ -21,10 +21,11 @@ class App
   private
 
   def compose_response(body = '', status = 200)
-    Rack::Response.new(body, status, 'Content-Type' => 'text/plain')
+    Rack::Response.new(body, status, 'Content-Type' => 'text/plain').finish
   end
 
   def render_time(formats)
+    formats.parse
     if formats.valid?
       compose_response(@time.strftime(formats.result))
     else
