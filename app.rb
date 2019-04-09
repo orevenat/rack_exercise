@@ -1,11 +1,6 @@
 require_relative 'check_format'
 
 class App
-
-  def initialize
-    @time = Time.at(0)
-  end
-
   def call(env)
     @request = Rack::Request.new(env)
     path = @request.path_info
@@ -25,9 +20,12 @@ class App
   end
 
   def render_time(query)
+    return compose_response('Empty time format', 400) if query.empty?
+
     formats = CheckFormat.new(query).parse
+
     if formats.valid?
-      compose_response(@time.strftime(formats.result))
+      compose_response(formats.result)
     else
       compose_response("Unknown time format [#{formats.unknown_formats.join(' ')}]", 400)
     end

@@ -11,22 +11,19 @@ class CheckFormat
   attr_reader :formats, :unknown_formats
 
   def initialize(format_string = '')
+    @time = Time.now
     @format_string = format_string
     @formats = []
     @unknown_formats = []
   end
 
   def parse
-    if format_string.nil? || format_string.empty?
-      self.formats = FORMAT_LIST.keys
-    else
-      check_formats
-    end
+    check_formats
     self
   end
 
   def result
-    formats.map { |el| FORMAT_LIST[el] }.join('-')
+    @time.strftime(formats.map { |el| FORMAT_LIST[el] }.join('-'))
   end
 
   def valid?
@@ -35,17 +32,14 @@ class CheckFormat
 
   private
 
-  attr_reader :format_string
-  attr_writer :formats, :unknown_formats
-
   def check_formats
-    puted_formats = format_string.split(',')
+    puted_formats = @format_string.split(',')
 
     puted_formats.each do |format|
       if FORMAT_LIST[format.to_sym]
-        formats << format.to_sym
+        @formats << format.to_sym
       else
-        unknown_formats << format
+        @unknown_formats << format
       end
     end
   end
